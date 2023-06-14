@@ -1,9 +1,15 @@
 name: Node js app deploy to EKS
 on:
   push:
-    branches: [ "main" ]
+    paths:
+      - '**/*.yaml'
+    branches:
+      - main
   pull_request:
-    branches: [ "main" ]
+    paths:
+      - '**/*.yaml'
+    branches:
+      - main
 
 jobs:
   deploy:
