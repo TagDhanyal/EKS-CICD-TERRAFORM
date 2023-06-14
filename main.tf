@@ -95,7 +95,7 @@ resource "aws_eks_cluster" "eks_cluster" {
   version  = "1.27"
 
   vpc_config {
-    subnet_ids         = [aws_subnet.eks_subnet.id, aws_subnet.eks_subnet.id]
+    subnet_ids         = [aws_subnet.eks_subnet.id, aws_subnet.eks_subnet2.id]
     security_group_ids = [aws_security_group.eks_sg.id]
   }
 
