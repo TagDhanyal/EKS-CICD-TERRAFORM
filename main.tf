@@ -92,7 +92,7 @@ resource "aws_security_group" "eks_sg" {
 resource "aws_eks_cluster" "eks_cluster" {
   name     = "my-eks-cluster"
   role_arn = aws_iam_role.eks_cluster_role.arn
-  version  = "1.21"
+  version  = "1.27"
 
   vpc_config {
     subnet_ids         = [aws_subnet.eks_subnet.id]
@@ -224,7 +224,7 @@ resource "aws_lb" "alb" {
   internal           = false
   load_balancer_type = "application"
   security_groups    = [aws_security_group.eks_sg.id]
-  subnets            = ["aws_subnet.eks_subnet.id, aws_subnet.eks_subnet2"]
+  subnets            = [aws_subnet.eks_subnet.id, aws_subnet.eks_subnet2.id]
 
   tags = {
     Name = "my-eks-alb"
