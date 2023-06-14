@@ -20,7 +20,15 @@ resource "aws_subnet" "eks_subnet" {
     Name = "eks-subnet"
   }
 }
-
+resource "aws_subnet" "eks_subnet2" {
+  vpc_id                  = aws_vpc.eks_vpc.id
+  cidr_block              = "10.0.2.0/24"
+  availability_zone       = "us-east-2b"
+  map_public_ip_on_launch = true
+  tags = {
+    Name = "eks-subnet-2"
+  }
+}
 resource "aws_internet_gateway" "eks_igw" {
   vpc_id = aws_vpc.eks_vpc.id
 
@@ -216,7 +224,7 @@ resource "aws_lb" "alb" {
   internal           = false
   load_balancer_type = "application"
   security_groups    = [aws_security_group.eks_sg.id]
-  subnets            = [aws_subnet.eks_subnet.id]
+  subnets            = [aws_subnet.eks_subnet.id, aws_subnet.eks_subnet2]
 
   tags = {
     Name = "my-eks-alb"
