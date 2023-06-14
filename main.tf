@@ -108,16 +108,20 @@ resource "aws_eks_fargate_profile" "example" {
 resource "aws_iam_role" "example" {
   name = "eks-fargate-profile-example"
 
-  assume_role_policy = jsonencode({
-    Statement = [{
-      Action = "sts:AssumeRole"
-      Effect = "Allow"
-      Principal = {
-        Service = "eks-fargate-pods.amazonaws.com"
+  assume_role_policy = <<EOF
+{
+  "Statement": [
+    {
+      "Action": "sts:AssumeRole",
+      "Effect": "Allow",
+      "Principal": {
+        "Service": "eks-fargate-pods.amazonaws.com"
       }
-    }]
-    Version = "2012-10-17"
-  })
+    }
+  ],
+  "Version": "2012-10-17"
+}
+EOF
 }
 resource "aws_iam_role_policy_attachment" "example-AmazonEKSFargatePodExecutionRolePolicy" {
   policy_arn = "arn:aws:iam::aws:policy/AmazonEKSFargatePodExecutionRolePolicy"
@@ -187,6 +191,7 @@ resource "aws_iam_role" "eks_node_role" {
 EOF
 }
 
+
 resource "aws_iam_role_policy_attachment" "eks_node_policy" {
   policy_arn = "arn:aws:iam::aws:policy/AmazonEKSWorkerNodePolicy"
   role       = aws_iam_role.eks_node_role.name
@@ -224,7 +229,7 @@ resource "aws_lb_target_group" "target_group" {
   protocol    = "HTTP"
   target_type = "ip"
 
-  vpc_id      = aws_vpc.eks_vpc.id
+  vpc_id = aws_vpc.eks_vpc.id
 
   health_check {
     enabled             = true
