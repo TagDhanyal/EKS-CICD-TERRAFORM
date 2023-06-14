@@ -160,7 +160,7 @@ resource "aws_eks_node_group" "eks_node_group" {
     max_size     = 1
   }
 
-  instance_types = "t2.micro"  
+  instance_types = ["t2.micro"]  
   subnet_ids = [aws_subnet.eks_subnet.id, aws_subnet.eks_subnet2.id]
 
   depends_on = [
