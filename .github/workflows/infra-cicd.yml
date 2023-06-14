@@ -4,11 +4,11 @@ on:
   workflow_dispatch:
   push:
     paths:
-        - 'infrastructure/**.tf'
+        - '**/**.tf'
     branches: [ "main" ]  
   pull_request:
     paths:
-        - 'infrastructure/**.tf'
+        - '**/**.tf'
     branches: [ "main" ]
 
 permissions: read-all
