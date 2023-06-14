@@ -1,0 +1,22 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: myeksapp
+  labels:
+    app: myeksapp
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: myeksapp
+  template:
+    metadata:
+      labels:
+        app: myeksapp
+    spec:
+      containers:
+        - name: my-eks-repo
+          image: 914863377063.dkr.ecr.us-west-1.amazonaws.com/my-eks-repo:latest
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 8080
