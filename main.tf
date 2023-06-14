@@ -14,7 +14,7 @@ resource "aws_vpc" "eks_vpc" {
 resource "aws_subnet" "eks_subnet" {
   vpc_id                  = aws_vpc.eks_vpc.id
   cidr_block              = "10.0.1.0/24"
-  availability_zone       = "us-west-1a"
+  availability_zone       = "us-west-1b"
   map_public_ip_on_launch = true
   tags = {
     Name = "eks-subnet"
@@ -24,7 +24,7 @@ resource "aws_subnet" "eks_subnet" {
 resource "aws_subnet" "eks_subnet2" {
   vpc_id                  = aws_vpc.eks_vpc.id
   cidr_block              = "10.0.2.0/24"
-  availability_zone       = "us-west-1b"
+  availability_zone       = "us-west-1c"
   map_public_ip_on_launch = true
   tags = {
     Name = "eks-subnet-2"
