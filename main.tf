@@ -95,7 +95,7 @@ resource "aws_eks_cluster" "eks_cluster" {
   version  = "1.27"
 
   vpc_config {
-    subnet_ids         = [aws_subnet.eks_subnet.id]
+    subnet_ids         = [aws_subnet.eks_subnet.id, aws_subnet.eks_subnet.id]
     security_group_ids = [aws_security_group.eks_sg.id]
   }
 
@@ -107,7 +107,7 @@ resource "aws_eks_fargate_profile" "example" {
   cluster_name           = aws_eks_cluster.eks_cluster.name
   fargate_profile_name   = "example"
   pod_execution_role_arn = aws_iam_role.example.arn
-  subnet_ids             = [aws_subnet.eks_subnet.id]
+  subnet_ids             = [aws_subnet.eks_subnet.id, aws_subnet.eks_subnet2.id]
 
   selector {
     namespace = "example"
@@ -170,7 +170,7 @@ resource "aws_eks_node_group" "eks_node_group" {
     max_size     = 5
   }
 
-  subnet_ids = [aws_subnet.eks_subnet.id]
+  subnet_ids = [aws_subnet.eks_subnet.id, aws_subnet.eks_subnet2.id]
 
   depends_on = [
     aws_iam_role_policy_attachment.eks_node_policy,
