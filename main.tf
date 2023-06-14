@@ -103,16 +103,6 @@ resource "aws_eks_cluster" "eks_cluster" {
     Name = "my-eks-cluster"
   }
 }
-resource "aws_eks_fargate_profile" "example" {
-  cluster_name           = aws_eks_cluster.eks_cluster.name
-  fargate_profile_name   = "example"
-  pod_execution_role_arn = aws_iam_role.example.arn
-  subnet_ids             = [aws_subnet.eks_subnet.id, aws_subnet.eks_subnet2.id]
-
-  selector {
-    namespace = "example"
-  }
-}
 resource "aws_iam_role" "example" {
   name = "eks-fargate-profile-example"
 
@@ -165,11 +155,12 @@ resource "aws_eks_node_group" "eks_node_group" {
   node_role_arn   = aws_iam_role.eks_node_role.arn
 
   scaling_config {
-    desired_size = 3
+    desired_size = 1
     min_size     = 1
-    max_size     = 5
+    max_size     = 1
   }
 
+  instance_types = "t2.micro"  
   subnet_ids = [aws_subnet.eks_subnet.id, aws_subnet.eks_subnet2.id]
 
   depends_on = [
