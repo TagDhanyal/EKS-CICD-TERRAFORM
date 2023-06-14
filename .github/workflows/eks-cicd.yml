@@ -41,8 +41,9 @@ jobs:
         REPOSITORY: my-eks-repo
         IMAGE_TAG: latest
       run: |
-        docker build -t $REGISTRY/$REPOSITORY:$IMAGE_TAG .
-        docker push $REGISTRY/$REPOSITORY:$IMAGE_TAG
+        docker build -t my-eks-repo .
+        docker tag my-eks-repo:latest 914863377063.dkr.ecr.us-west-1.amazonaws.com/my-eks-repo:latest
+        docker push 914863377063.dkr.ecr.us-west-1.amazonaws.com/my-eks-repo:latest
 
     - name: Update kube config
       run: aws eks update-kubeconfig --name my-eks-cluster
