@@ -35,27 +35,21 @@ jobs:
     - name: Login to Amazon ECR
       id: login-ecr
       uses: aws-actions/amazon-ecr-login@v1
-
-    - name: Build, tag, and push Docker image to Amazon ECR
+      
+    - name: Build, tag, and push the image to Amazon ECR
+      id: build-image
       env:
-        REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-        REPOSITORY: my-eks-repo
+        ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+        ECR_REPOSITORY: my-eks-repo
         IMAGE_TAG: latest
       run: |
-        docker build -t $REPOSITORY .
-        docker tag $REPOSITORY:latest $REGISTRY/$REPOSITORY:$IMAGE_TAG
-        docker push $REGISTRY/$REPOSITORY:$IMAGE_TAG
-
+        # Build a docker container and push it to ECR 
+        docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
+        echo "Pushing image to ECR..."
+        docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+        echo "name=image::$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG" >> $GITHUB_OUTPUT
+      
     - name: Update kubeconfig
-      run: aws eks update-kubeconfig --name my-eks-cluster
-    
-    - name: Deploy to EKS
-      run: |
-        kubectl apply -f deployment.yaml
-        kubectl apply -f service.yaml
-
-
-    - name: Update kube config
       run: aws eks update-kubeconfig --name my-eks-cluster
     
     - name: Deploy to EKS
