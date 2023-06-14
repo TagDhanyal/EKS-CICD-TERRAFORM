@@ -14,21 +14,23 @@ resource "aws_vpc" "eks_vpc" {
 resource "aws_subnet" "eks_subnet" {
   vpc_id                  = aws_vpc.eks_vpc.id
   cidr_block              = "10.0.1.0/24"
-  availability_zone       = "us-east-2a"
+  availability_zone       = "us-west-1a"
   map_public_ip_on_launch = true
   tags = {
     Name = "eks-subnet"
   }
 }
+
 resource "aws_subnet" "eks_subnet2" {
   vpc_id                  = aws_vpc.eks_vpc.id
   cidr_block              = "10.0.2.0/24"
-  availability_zone       = "us-east-2b"
+  availability_zone       = "us-west-1b"
   map_public_ip_on_launch = true
   tags = {
     Name = "eks-subnet-2"
   }
 }
+
 resource "aws_internet_gateway" "eks_igw" {
   vpc_id = aws_vpc.eks_vpc.id
 
@@ -98,13 +100,19 @@ resource "aws_eks_cluster" "eks_cluster" {
     subnet_ids         = [aws_subnet.eks_subnet.id, aws_subnet.eks_subnet2.id]
     security_group_ids = [aws_security_group.eks_sg.id]
   }
+}
+resource "aws_eks_fargate_profile" "fargate" {
+  cluster_name           = aws_eks_cluster.eks_cluster.name
+  fargate_profile_name   = "my-fargate"
+  pod_execution_role_arn = aws_iam_role.example1.arn
+  subnet_ids             = [aws_subnet.eks_subnet.id, aws_subnet.eks_subnet2.id]
 
-  tags = {
-    Name = "my-eks-cluster"
+  selector {
+    namespace = "app"
   }
 }
-resource "aws_iam_role" "example" {
-  name = "eks-fargate-profile-example"
+resource "aws_iam_role" "example1" {
+  name = "eks-fargate-profile-fargate"
 
   assume_role_policy = <<EOF
 {
@@ -121,10 +129,12 @@ resource "aws_iam_role" "example" {
 }
 EOF
 }
+
 resource "aws_iam_role_policy_attachment" "example-AmazonEKSFargatePodExecutionRolePolicy" {
   policy_arn = "arn:aws:iam::aws:policy/AmazonEKSFargatePodExecutionRolePolicy"
-  role       = aws_iam_role.example.name
+  role       = aws_iam_role.example1.name
 }
+
 resource "aws_iam_role" "eks_cluster_role" {
   name = "my-eks-cluster-role"
 
@@ -147,63 +157,6 @@ EOF
 resource "aws_iam_role_policy_attachment" "eks_cluster_policy" {
   policy_arn = "arn:aws:iam::aws:policy/AmazonEKSClusterPolicy"
   role       = aws_iam_role.eks_cluster_role.name
-}
-
-resource "aws_eks_node_group" "eks_node_group" {
-  cluster_name    = aws_eks_cluster.eks_cluster.name
-  node_group_name = "my-eks-node-group"
-  node_role_arn   = aws_iam_role.eks_node_role.arn
-
-  scaling_config {
-    desired_size = 1
-    min_size     = 1
-    max_size     = 1
-  }
-
-  instance_types = ["t2.micro"]  
-  subnet_ids = [aws_subnet.eks_subnet.id, aws_subnet.eks_subnet2.id]
-
-  depends_on = [
-    aws_iam_role_policy_attachment.eks_node_policy,
-    aws_iam_role_policy_attachment.eks_cni_policy,
-    aws_iam_role_policy_attachment.eks_ecr_policy,
-  ]
-}
-
-resource "aws_iam_role" "eks_node_role" {
-  name = "my-eks-node-role"
-
-  assume_role_policy = <<EOF
-{
-  "Version": "2012-10-17",
-  "Statement": [
-    {
-      "Action": "sts:AssumeRole",
-      "Principal": {
-        "Service": "ec2.amazonaws.com"
-      },
-      "Effect": "Allow",
-      "Sid": ""
-    }
-  ]
-}
-EOF
-}
-
-
-resource "aws_iam_role_policy_attachment" "eks_node_policy" {
-  policy_arn = "arn:aws:iam::aws:policy/AmazonEKSWorkerNodePolicy"
-  role       = aws_iam_role.eks_node_role.name
-}
-
-resource "aws_iam_role_policy_attachment" "eks_cni_policy" {
-  policy_arn = "arn:aws:iam::aws:policy/AmazonEKS_CNI_Policy"
-  role       = aws_iam_role.eks_node_role.name
-}
-
-resource "aws_iam_role_policy_attachment" "eks_ecr_policy" {
-  policy_arn = "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly"
-  role       = aws_iam_role.eks_node_role.name
 }
 
 resource "aws_ecr_repository" "my_repository" {
@@ -244,6 +197,7 @@ resource "aws_lb_target_group" "target_group" {
     Name = "my-eks-target-group"
   }
 }
+
 resource "aws_lb_listener" "front_end" {
   load_balancer_arn = aws_lb.alb.arn
   port              = "80"
