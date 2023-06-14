@@ -15,7 +15,7 @@ resource "aws_subnet" "eks_subnet" {
   vpc_id                  = aws_vpc.eks_vpc.id
   cidr_block              = "10.0.1.0/24"
   availability_zone       = "us-west-1b"
-  map_public_ip_on_launch = true
+  map_public_ip_on_launch = false
   tags = {
     Name = "eks-subnet"
   }
@@ -25,7 +25,7 @@ resource "aws_subnet" "eks_subnet2" {
   vpc_id                  = aws_vpc.eks_vpc.id
   cidr_block              = "10.0.2.0/24"
   availability_zone       = "us-west-1c"
-  map_public_ip_on_launch = true
+  map_public_ip_on_launch = false
   tags = {
     Name = "eks-subnet-2"
   }
@@ -184,7 +184,7 @@ resource "aws_lb_target_group" "target_group" {
   vpc_id = aws_vpc.eks_vpc.id
 
   health_check {
-    enabled             = true
+    enabled             = false
     interval            = 30
     path                = "/"
     port                = "traffic-port"
