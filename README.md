@@ -1,6 +1,6 @@
 # AutoTerraformEKS-CI/CD
 
-![Project Logo](images/arch.png)
+![Project Logo](arch.png)
 
 Automated Infrastructure Deployment and CI/CD with Terraform, EKS, and GitHub Actions
 [![Node.js app deploy to EKS](https://github.com/TagDhanyal/EKS-CICD-TERRAFORM/actions/workflows/eks-cicd.yml/badge.svg?branch=main)](https://github.com/TagDhanyal/EKS-CICD-TERRAFORM/actions/workflows/eks-cicd.yml)
